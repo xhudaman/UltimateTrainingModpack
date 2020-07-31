@@ -69,6 +69,21 @@ pub unsafe fn save_states(module_accessor: &mut app::BattleObjectModuleAccessor,
         return;
     }
 
+    for str in vec!(
+        "sys_hit_dead",
+        "sys_dead",
+        "sys_dead_dark",
+        "sys_dead_flash",
+        "sys_dead_front",
+        "sys_dead_light",
+        "sys_dead2",
+        "sys_dead2_ground",
+        "sys_explosion_flash",
+        "sys_explosion_sign"
+    ) {
+        EffectModule::kill_kind(module_accessor, Hash40::new(str), false, true);
+    }
+
     let status = StatusModule::status_kind(module_accessor) as i32;
     let save_state_x: *mut f32;
     let save_state_y: *mut f32;
