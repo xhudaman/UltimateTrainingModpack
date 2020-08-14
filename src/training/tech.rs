@@ -1,8 +1,6 @@
 use crate::common::consts::*;
 use crate::common::*;
-use crate::training::mash;
-use smash::app::sv_system;
-use smash::app::{self, lua_bind::*};
+use smash::app::{self, lua_bind::*, sv_system};
 use smash::hash40;
 use smash::lib::lua_const::*;
 use smash::lib::L2CValue;
@@ -10,20 +8,7 @@ use smash::lua2cpp::L2CFighterBase;
 
 static mut ROLL_DIRECTION: Direction = Direction::None;
 
-#[skyline::hook(replace = smash::lua2cpp::L2CFighterBase_change_status)]
-pub unsafe fn handle_change_status(
-    fighter: &mut L2CFighterBase,
-    status_kind: L2CValue,
-    unk: L2CValue,
-) -> L2CValue {
-    let mut status_kind = status_kind;
-    let mut unk = unk;
-    mod_handle_change_status(fighter, &mut status_kind, &mut unk);
-
-    original!()(fighter, status_kind, unk)
-}
-
-unsafe fn mod_handle_change_status(
+pub unsafe fn mod_handle_change_status(
     fighter: &mut L2CFighterBase,
     status_kind: &mut L2CValue,
     unk: &mut L2CValue,
@@ -74,8 +59,6 @@ unsafe fn mod_handle_change_status(
             }
             _ => (),
         }
-
-        mash::perform_defensive_option();
 
         return;
     }

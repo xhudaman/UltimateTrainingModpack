@@ -121,6 +121,35 @@ pub fn is_shielding(module_accessor: *mut app::BattleObjectModuleAccessor) -> bo
     }
 }
 
+pub fn is_ground_tech(module_accessor: *mut app::BattleObjectModuleAccessor) -> bool {
+    unsafe {
+        let status_kind = StatusModule::status_kind(module_accessor) as i32;
+        is_ground_tech_status(status_kind)
+    }
+}
+
+pub fn is_ground_tech_status(status_kind: i32) -> bool {
+    [*FIGHTER_STATUS_KIND_DOWN, *FIGHTER_STATUS_KIND_PASSIVE, *FIGHTER_STATUS_KIND_PASSIVE].contains(&status_kind)
+}
+
+pub fn is_landing(module_accessor: *mut app::BattleObjectModuleAccessor) -> bool {
+    unsafe {
+        let status_kind = StatusModule::status_kind(module_accessor) as i32;
+        is_landing_status(status_kind)
+    }
+}
+
+pub fn is_landing_status(status_kind: i32) -> bool {
+    [
+        *FIGHTER_STATUS_KIND_AIR_LASSO_LANDING,
+        *FIGHTER_STATUS_KIND_LANDING,
+        *FIGHTER_STATUS_KIND_LANDING_ATTACK_AIR,
+        *FIGHTER_STATUS_KIND_LANDING_FALL_SPECIAL,
+        *FIGHTER_STATUS_KIND_LANDING_DAMAGE_LIGHT,
+        *FIGHTER_STATUS_KIND_LANDING_LIGHT,
+    ].contains(&status_kind)
+}
+
 pub fn is_in_shieldstun(module_accessor: &mut app::BattleObjectModuleAccessor) -> bool {
     let status_kind;
     let prev_status;

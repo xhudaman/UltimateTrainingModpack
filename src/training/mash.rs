@@ -3,8 +3,10 @@ use crate::common::*;
 use crate::training::character_specific;
 use crate::training::fast_fall;
 use crate::training::shield;
-use smash::app::{self, lua_bind::*};
+use smash::app::{self, lua_bind::*, sv_system};
 use smash::lib::lua_const::*;
+use smash::lib::L2CValue;
+use smash::lua2cpp::L2CFighterBase;
 
 static mut CURRENT_AERIAL: Action = Action::Nair;
 static mut QUEUE: Vec<Action> = vec![];
@@ -545,4 +547,27 @@ pub unsafe fn perform_defensive_option() {
 
     // Suspend shield hold to allow for other defensive options
     shield::suspend_shield(action);
+}
+
+pub unsafe fn mod_handle_change_status(
+    fighter: &mut L2CFighterBase,
+    status_kind: &mut L2CValue,
+    _unk: &mut L2CValue,
+) {
+    if !is_training_mode() {
+        return;
+    }
+
+    let module_accessor = sv_system::battle_object_module_accessor(fighter.lua_state_agent);
+    if !is_operation_cpu(module_accessor) {
+        return;
+    }
+
+    let status_kind_int = status_kind
+        .try_get_int()
+        .unwrap_or(*FIGHTER_STATUS_KIND_WAIT as u64) as i32;
+
+    if is_ground_tech_status(status_kind_int) || is_landing_status(status_kind_int) {
+        perform_defensive_option();
+    }
 }

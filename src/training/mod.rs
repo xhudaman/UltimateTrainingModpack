@@ -3,6 +3,8 @@ use crate::hitbox_visualizer;
 use skyline::nn::ro::LookupSymbol;
 use smash::app::{self, lua_bind::*};
 use smash::lib::lua_const::*;
+use smash::lib::L2CValue;
+use smash::lua2cpp::L2CFighterBase;
 
 pub mod directional_influence;
 pub mod shield;
@@ -205,6 +207,20 @@ pub unsafe  fn handle_is_enable_transition_term(
     combo::is_enable_transition_term(module_accessor, transition_term, is);
 
     is
+}
+
+#[skyline::hook(replace = smash::lua2cpp::L2CFighterBase_change_status)]
+pub unsafe fn handle_change_status(
+    fighter: &mut L2CFighterBase,
+    status_kind: L2CValue,
+    unk: L2CValue,
+) -> L2CValue {
+    let mut status_kind = status_kind;
+    let mut unk = unk;
+    tech::mod_handle_change_status(fighter, &mut status_kind, &mut unk);
+    mash::mod_handle_change_status(fighter, &mut status_kind, &mut unk);
+
+    original!()(fighter, status_kind, unk)
 }
 
 pub fn training_mods() {
