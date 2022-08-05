@@ -4,6 +4,8 @@ if (window.NodeList && !NodeList.prototype.forEach) {
     NodeList.prototype.forEach = Array.prototype.forEach;
 }
 
+NodeList.prototype.map = Array.prototype.map;
+
 // Polyfill for Object.entries
 // Iterates on an object and returns an array containing arrays of key/value pairs ([key, value])
 // for each pair in the object
@@ -82,6 +84,8 @@ const currentTabContent = () => {
     return currentActiveTabContent;
 };
 
+const getActiveModal = () => document.querySelector('.modal:not(.hide)');
+
 const openTab = (eventTarget) => {
     playSound('SeWebZoomIn');
     const selectedTab = document.getElementById(eventTarget.id.replace('button', 'tab'));
@@ -114,6 +118,7 @@ const openMenuItem = (eventTarget) => {
 
     currentTabContent().classList.toggle('hide');
 
+    document.querySelector('.tab-list-container').classList.add('hidden');
     modal.classList.toggle('hide');
     modal.querySelector('button').focus();
 
@@ -124,6 +129,9 @@ const closeAllActiveModals = () => {
     document.querySelectorAll('.modal:not(.hide)').forEach((modal) => {
         modal.classList.add('hide');
     });
+
+    document.querySelector('.tab-list-container').classList.remove('hidden');
+
     lastFocusedItem.focus();
 };
 
@@ -142,7 +150,7 @@ const toggleOption = (element) => {
 
     settings[menuId] = previouslySelected ? settings[menuId] - toggleValue : settings[menuId] + toggleValue;
 
-    element.querySelector('img').classList.toggle('hidden');
+    populateMenuFromSettings();
 };
 
 // Add this later
@@ -193,7 +201,7 @@ const exit = () => {
 
 function closeOrExit() {
     // Close any open menus
-    if (document.querySelector('.modal:not(.hide)')) {
+    if (getActiveModal()) {
         console.log('Closing Items');
         closeAllActiveModals();
         currentTabContent().classList.remove('hide');
@@ -285,7 +293,7 @@ function getMaskFromMenuID(id) {
 
 function resetCurrentMenu() {
     playSound('SeWebTextboxStartEdit');
-    const menu = document.querySelector('.modal:not(.hide)');
+    const menu = getActiveModal();
 
     const menuId = menu.dataset.id;
     const defaultSectionMask = settings[DEFAULTS_PREFIX + menuId];
@@ -344,4 +352,55 @@ function cyclePrevTab() {
         previousTab = tabs[tabs.length - 1];
     }
     openTab(previousTab);
+}
+
+function toggleAllOptions(toggleOn) {
+    const activeModal = getActiveModal();
+
+    if (!activeModal.classList.contains('single-option')) {
+        const options = activeModal.querySelectorAll('.modal-button');
+
+        if (confirm(`Toggle all options ${toggleOn ? 'on' : 'off'}?`)) {
+            if (toggleOn) {
+                const mask = options
+                    .map((option) => parseInt(option.querySelector('.menu-icon').dataset.val))
+                    .reduce((accumulator, currentValue) => {
+                        return accumulator + currentValue;
+                    }, 0);
+
+                settings[activeModal.dataset.id] = mask;
+
+                // element.querySelector('img').classList.toggle('hidden');
+            } else {
+                // Toggle all options off
+                settings[activeModal.dataset.id] = 0;
+            }
+
+            playSound('SeSelectCheck');
+            populateMenuFromSettings();
+        }
+    }
+}
+
+function assignSwitchKeyBinding(button, labelSelector, labelText, callback) {
+    if (isNx) {
+        window.nx.footer.setAssign(button, '', callback, { se: '' });
+    }
+
+    if (labelText) {
+        const label = document.querySelector(labelSelector);
+        label.innerHTML = labelText;
+    }
+}
+
+function setModalButtonOverrides() {
+    assignSwitchKeyBinding('ZL', '.tab-list-container p:first-of-type', 'All Off: &#xE0A6;', toggleAllOptions);
+    assignSwitchKeyBinding('ZR', '.tab-list-container p:last-of-type', 'All On: &#xE0A7;', () =>
+        toggleAllOptions(true)
+    );
+}
+
+function resetModalButtonOverrides() {
+    assignSwitchKeyBinding('ZL', '.tab-list-container p:first-of-type', 'Prev Tab: &#xE0A6;', cyclePrevTab);
+    assignSwitchKeyBinding('ZR', '.tab-list-container p:last-of-type', 'Next Tab: &#xE0A7;', cycleNextTab);
 }
