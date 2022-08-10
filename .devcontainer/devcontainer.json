@@ -10,16 +10,6 @@
 	"remoteEnv": {
 		"LOCAL_WORKSPACE_FOLDER": "${localWorkspaceFolder}"
 	},
-	"customizations": {
-		"vscode": {
-			"extensions": [
-				"rust-lang.rust-analyzer",
-				"bungcip.better-toml",
-				"serayuzgur.crates",
-				"statiolake.vscode-rustfmt"
-			]
-		}
-	},
 	// // Add the IDs of extensions you want installed when the container is created.
 	"extensions": [
 		"ms-azuretools.vscode-docker",
