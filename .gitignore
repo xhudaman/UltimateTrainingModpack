@@ -3,3 +3,5 @@ Cargo.lock
 
 .idea/
 release/
+
+*.code-workspace
