@@ -188,8 +188,8 @@ impl InputLog {
                     Buttons::STOCK_SHARE => ("plus", WHITE),
                     Buttons::APPEAL_HI => ("dpad_up", WHITE),
                     Buttons::APPEAL_LW => ("dpad_down", WHITE),
-                    Buttons::APPEAL_SL => ("dpad_right", WHITE),
-                    Buttons::APPEAL_SR => ("dpad_left", WHITE),
+                    Buttons::APPEAL_SL => ("dpad_left_right", WHITE),
+                    Buttons::APPEAL_SR => ("dpad_left_right", WHITE),
                     _ => return None,
                 })
             })
