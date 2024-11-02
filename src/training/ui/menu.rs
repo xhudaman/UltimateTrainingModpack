@@ -8,6 +8,7 @@ use training_mod_tui::{
 };
 
 use crate::common::menu::{MENU_CLOSE_FRAME_COUNTER, MENU_CLOSE_WAIT_FRAMES, MENU_RECEIVED_INPUT};
+use crate::logging::*;
 use crate::training::frame_counter;
 use crate::{common, common::menu::QUICK_MENU_ACTIVE, input::*};
 use training_mod_consts::TOGGLE_MAX;
@@ -104,7 +105,7 @@ unsafe fn render_submenu_page(app: &mut App, root_pane: &Pane) {
                     && col == tab.submenus.state.selected_col().unwrap();
 
                 // Set Pane Visibility
-                title_text.set_text_string(submenu.title);
+                title_text.set_text_string(&t!(submenu.title));
 
                 // In the actual 'layout.arc' file, every icon image is stacked
                 // into a single container pane, with each image directly on top of another.
@@ -141,7 +142,7 @@ unsafe fn render_submenu_page(app: &mut App, root_pane: &Pane) {
                         .find_pane_by_name_recursive("FooterTxt")
                         .unwrap()
                         .as_textbox()
-                        .set_text_string(submenu.help_text);
+                        .set_text_string(&t!(submenu.help_text));
 
                     title_bg_material.set_white_res_color(BG_LEFT_ON_WHITE_COLOR);
                     title_bg_material.set_black_res_color(BG_LEFT_ON_BLACK_COLOR);
@@ -218,7 +219,7 @@ unsafe fn render_toggle_page(app: &mut App, root_pane: &Pane) {
                     }
                 }
 
-                title_text.set_text_string(toggle.title);
+                title_text.set_text_string(&t!(toggle.title));
 
                 if use_check_icon {
                     menu_button
@@ -483,7 +484,9 @@ pub unsafe fn draw(root_pane: &Pane) {
     if let Some(quit_button) = root_pane.find_pane_by_name_recursive("TrModTitle") {
         for quit_txt_s in &["set_txt_00", "set_txt_01"] {
             if let Some(quit_txt) = quit_button.find_pane_by_name_recursive(quit_txt_s) {
-                quit_txt.as_textbox().set_text_string("Modpack Menu");
+                quit_txt
+                    .as_textbox()
+                    .set_text_string(&t!("common.modpack_menu"));
             }
         }
     }
