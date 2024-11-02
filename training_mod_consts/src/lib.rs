@@ -94,6 +94,7 @@ pub struct TrainingModpackMenu {
     pub tech_hide: OnOff,
     pub update_policy: UpdatePolicy,
     pub lra_reset: OnOff,
+    pub selected_locale: Locale,
 }
 
 #[repr(C)]
@@ -202,6 +203,7 @@ pub static DEFAULTS_MENU: TrainingModpackMenu = TrainingModpackMenu {
     tech_hide: OnOff::OFF,
     update_policy: UpdatePolicy::default(),
     lra_reset: OnOff::ON,
+    selected_locale: Locale::default(),
 };
 
 pub static mut MENU: TrainingModpackMenu = DEFAULTS_MENU;
@@ -803,6 +805,14 @@ impl_toggletrait! {
     true,
     1,
 }
+impl_toggletrait! {
+    Locale,
+    "menu.misc_settings.language.title",
+    "selected_locale",
+    "menus.misc_settings.language.description",
+    true,
+    1,
+}
 
 pub unsafe fn create_app<'a>() -> App<'a> {
     // Note that the to_submenu_xxx() functions are defined in the `impl_toggletrait` and `impl_slidertrait` macros
@@ -959,6 +969,7 @@ pub unsafe fn create_app<'a>() -> App<'a> {
     misc_tab_submenus.push(to_submenu_hud());
     misc_tab_submenus.push(to_submenu_update_policy());
     misc_tab_submenus.push(to_submenu_lra_reset());
+    misc_tab_submenus.push(to_submenu_selected_locale());
     let misc_tab = Tab {
         id: "misc",
         title: "Misc Settings",

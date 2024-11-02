@@ -1044,3 +1044,26 @@ byteflags! {
         pub STATUS = "Status Only",
     }
 }
+
+byteflags! {
+    pub struct Locale {
+        pub ENGLISH_US = "en_us",
+        pub FRENCH = "fr",
+    }
+}
+
+impl Locale {
+    pub const fn default() -> Locale {
+        Locale::ENGLISH_US
+    }
+}
+
+impl From<u8> for Locale {
+    fn from(id: u8) -> Locale {
+        match id {
+            0 => Locale::ENGLISH_US,
+            1 => Locale::FRENCH,
+            _ => Locale::ENGLISH_US,
+        }
+    }
+}
